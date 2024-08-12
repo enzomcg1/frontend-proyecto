@@ -34,30 +34,48 @@ const ListaUsuario = () => {
     alert(`Editar producto con ID: ${id}`);
   };
 
+  // Función para agrupar productos por categoría
+  const agruparPorCategoria = (productos) => {
+    return productos.reduce((resultado, producto) => {
+      (resultado[producto.categoria] = resultado[producto.categoria] || []).push(producto);
+      return resultado;
+    }, {});
+  };
+
+  // Agrupar los productos antes de renderizar
+  const productosPorCategoria = agruparPorCategoria(lista);
+
   return (
-    <div className='row'>
-      {lista.map(producto => (
-        <div className='col-md-4 p-2' key={producto._id}>
-          <div className='card'>
-            <div className='card-header'>
-              <h4>Nombre del producto: {producto.nombre}</h4> {/* Usa los nombres correctos aquí */}
-              <p>Descripción del producto: {producto.descripcion}</p>
-              <p>Precio del producto: {producto.precio} PYG</p>
-            </div>
-            <div className='card-footer'>
-              <button
-                className='btn btn-danger'
-                onClick={() => EliminarProducto(producto._id)}
-              >
-                Eliminar
-              </button>
-              <button
-                className='btn btn-warning ml-2'
-                onClick={() => EditarProducto(producto._id)}
-              >
-                Editar
-              </button>
-            </div>
+    <div>
+      {Object.keys(productosPorCategoria).map(categoria => (
+        <div key={categoria} className='mb-4'>
+          <h3>{categoria.replace(/-/g, ' ')}</h3> {/* Reemplaza guiones con espacios */}
+          <div className='row'>
+            {productosPorCategoria[categoria].map(producto => (
+              <div className='col-md-4 p-2' key={producto._id}>
+                <div className='card'>
+                  <div className='card-header'>
+                    <h4>Nombre del producto: {producto.nombre}</h4>
+                    <p>Descripción del producto: {producto.descripcion}</p>
+                    <p>Precio del producto: {producto.precio} PYG</p>
+                  </div>
+                  <div className='card-footer'>
+                    <button
+                      className='btn btn-danger'
+                      onClick={() => EliminarProducto(producto._id)}
+                    >
+                      Eliminar
+                    </button>
+                    <button
+                      className='btn btn-warning ml-2'
+                      onClick={() => EditarProducto(producto._id)}
+                    >
+                      Editar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ))}
