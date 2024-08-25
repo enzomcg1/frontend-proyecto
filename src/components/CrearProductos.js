@@ -5,7 +5,8 @@ const CrearProducto = () => {
   const valorInicial = {
     nombre: '',
     descripcion: '',
-    precio: 0
+    precio: 0,
+    categoria: ''  // Agregamos la categoría al valor inicial
   };
 
   const [producto, setProducto] = useState(valorInicial);
@@ -35,6 +36,7 @@ const CrearProducto = () => {
       <div className="card card-body">
         <form onSubmit={guardarDatos}>
           <h2 className="text-center">Agregar producto</h2>
+
           <div className="mb-3">
             <label>Nombre del producto</label>
             <input
@@ -71,8 +73,28 @@ const CrearProducto = () => {
               value={producto.precio}
               onChange={capturarDatos}
               required
-              min="0" // Puedes agregar un valor mínimo si es necesario
+              min="0"
             />
+          </div>
+
+          <div className="mb-3">
+            <label>Categoría</label>
+            <select
+              name="categoria"
+              className="form-control"
+              value={producto.categoria}
+              onChange={capturarDatos}
+              required
+            >
+              <option value="">Selecciona una categoría</option>
+              <option value="limpieza">Limpieza</option>
+              <option value="gaseosas">Gaseosas</option>
+              <option value="bebidas-alcoholicas">Bebidas Alcohólicas</option>
+              <option value="embutidos">Embutidos</option>
+              <option value="panes">Panes</option>
+              <option value="cocina">Cocina</option>
+              <option value="remedios-para-mate">Remedios para Mate</option>
+            </select>
           </div>
 
           <button className="btn btn-primary form-control" type="submit">

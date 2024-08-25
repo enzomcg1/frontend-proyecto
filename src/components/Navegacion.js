@@ -42,6 +42,11 @@ const Navegacion = () => {
                                     </Link>
                                 </li>
                                 <li className="nav-item">
+                                    <Link className="nav-link" to="/venta-productos">
+                                        Venta de productos
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
                                     <Link className="nav-link" to="/perfil">
                                         Perfil
                                     </Link>
