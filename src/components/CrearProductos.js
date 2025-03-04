@@ -94,6 +94,7 @@ const CrearProducto = () => {
               <option value="panes">Panes</option>
               <option value="cocina">Cocina</option>
               <option value="remedios-para-mate">Remedios para Mate</option>
+              <option value="rodados">Vehiculos</option>
             </select>
           </div>
 

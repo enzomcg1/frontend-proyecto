@@ -18,7 +18,7 @@ const Login = () => {
             const response = await axios.post('http://localhost:4000/api/auth/login', usuario);
             localStorage.setItem('token', response.data.token);
             alert('Inicio de sesión exitoso');
-            navigate('components/ListaProductos.js'); // Redirige a la página de ListaProductos
+            navigate('components/PaginaPrincipal.js'); // Redirige a la página de ListaProductos
         } catch (error) {
             console.error('Error al iniciar sesión:', error.response ? error.response.data : error.message);
             alert(`Error al iniciar sesión: ${error.response ? error.response.data.message : error.message}`);

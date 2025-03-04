@@ -13,8 +13,8 @@ const Navegacion = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
-                <Link className="navbar-brand" to="/">
-                    PRODUCTOS
+                <Link className="navbar-brand" to="/pagina-principal">
+                    ERG SYSTEM
                 </Link>
                 <button
                     className="navbar-toggler"
@@ -32,7 +32,12 @@ const Navegacion = () => {
                         {isAuthenticated ? (
                             <>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/">
+                                    <Link className="nav-link" to="/pagina-principal">
+                                        Página Principal
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/ListaProductos">
                                         Lista de productos
                                     </Link>
                                 </li>
@@ -43,7 +48,7 @@ const Navegacion = () => {
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/venta-productos">
-                                        Venta de productos
+                                        POS
                                     </Link>
                                 </li>
                                 <li className="nav-item">
@@ -59,6 +64,11 @@ const Navegacion = () => {
                             </>
                         ) : (
                             <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/pagina-principal">
+                                        Página Principal
+                                    </Link>
+                                </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/login">
                                         Iniciar sesión
