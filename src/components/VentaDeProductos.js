@@ -2,131 +2,219 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const VentaDeProductos = () => {
-  const [productos, setProductos] = useState([]);
-  const [productosSeleccionados, setProductosSeleccionados] = useState([]);
-  const [montoIngresado, setMontoIngresado] = useState(0);
-  const [vuelto, setVuelto] = useState(null);
-  const [mensajeError, setMensajeError] = useState('');
+    const [productos, setProductos] = useState([]);
+    const [carrito, setCarrito] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [montoRecibido, setMontoRecibido] = useState(''); // Sin formatear para edición
+    const [vuelto, setVuelto] = useState('');
 
-  useEffect(() => {
-    const getProductos = async () => {
-      try {
-        const res = await axios.get('http://localhost:4000/api/producto');
-        setProductos(res.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
+    const [clientes, setClientes] = useState([]);
+    const [clienteSeleccionado, setClienteSeleccionado] = useState('');
+    const [tipoVenta, setTipoVenta] = useState('contado');
+
+    useEffect(() => {
+        const fetchProductos = async () => {
+            try {
+                const res = await axios.get('http://localhost:4000/api/producto');
+                setProductos(res.data);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
+
+        const fetchClientes = async () => {
+            try {
+                const res = await axios.get('http://localhost:4000/api/clientes');
+                setClientes(res.data);
+            } catch (error) {
+                console.error('Error al obtener clientes:', error);
+            }
+        };
+
+        fetchProductos();
+        fetchClientes();
+    }, []);
+
+    const agregarAlCarrito = (producto) => {
+        const productoEnCarrito = carrito.find((item) => item._id === producto._id);
+        if (productoEnCarrito) {
+            setCarrito((prevCarrito) =>
+                prevCarrito.map((item) =>
+                    item._id === producto._id
+                        ? { ...item, cantidad: item.cantidad + 1 }
+                        : item
+                )
+            );
+        } else {
+            setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+        }
+        setTotal((prevTotal) => prevTotal + producto.precio);
     };
 
-    getProductos();
-  }, []);
+    const quitarDelCarrito = (id) => {
+        const producto = carrito.find((item) => item._id === id);
+        if (producto.cantidad === 1) {
+            setCarrito((prevCarrito) => prevCarrito.filter((item) => item._id !== id));
+        } else {
+            setCarrito((prevCarrito) =>
+                prevCarrito.map((item) =>
+                    item._id === id ? { ...item, cantidad: item.cantidad - 1 } : item
+                )
+            );
+        }
+        setTotal((prevTotal) => prevTotal - producto.precio);
+    };
 
-  const manejarSeleccionProducto = (e) => {
-    const productoId = e.target.value;
-    const producto = productos.find(p => p._id === productoId);
+    const formatearNumero = (numero) => {
+        return parseFloat(numero).toLocaleString('es-ES'); // Formato español con puntos
+    };
 
-    if (producto && !productosSeleccionados.includes(producto)) {
-      setProductosSeleccionados([...productosSeleccionados, producto]);
-    }
-    setVuelto(null);
-    setMensajeError('');
-  };
+    const calcularVuelto = (monto) => {
+        // Guardar el monto recibido sin formatear para no limitar la edición
+        setMontoRecibido(monto);
 
-  const calcularTotal = () => {
-    return productosSeleccionados.reduce((total, producto) => total + producto.precio, 0);
-  };
+        // Calcular el vuelto solo cuando el monto es válido
+        const montoNumerico = parseFloat(monto.replace(/\./g, '')) || 0; // Quita puntos antes de parsear
+        const calculado = montoNumerico - total;
+        setVuelto(calculado >= 0 ? formatearNumero(calculado) : '0');
+    };
 
-  const manejarCambioMonto = (e) => {
-    setMontoIngresado(parseFloat(e.target.value));
-  };
+    const realizarVenta = async () => {
+        if (!clienteSeleccionado || carrito.length === 0) {
+            alert('Debe seleccionar un cliente y agregar productos al carrito.');
+            return;
+        }
 
-  const procesarVenta = () => {
-    const total = calcularTotal();
+        try {
+            if (tipoVenta === 'credito') {
+                const cliente = clientes.find((c) => c._id === clienteSeleccionado);
+                const nuevoCredito = parseFloat(cliente.creditoAcumulado || 0) + total;
 
-    if (productosSeleccionados.length === 0) {
-      setMensajeError('Por favor, selecciona al menos un producto.');
-      return;
-    }
+                await axios.put(`http://localhost:4000/api/clientes/${clienteSeleccionado}`, {
+                    ...cliente,
+                    creditoAcumulado: nuevoCredito,
+                });
+            }
 
-    if (montoIngresado >= total) {
-      const calculoVuelto = montoIngresado - total;
-      setVuelto(calculoVuelto);
-      setMensajeError('');
-    } else {
-      setMensajeError('El monto ingresado es insuficiente.');
-      setVuelto(null);
-    }
-  };
+            const venta = {
+                clienteId: clienteSeleccionado,
+                productos: carrito,
+                total,
+                tipoVenta,
+            };
 
-  const cancelarVenta = () => {
-    setProductosSeleccionados([]);
-    setMontoIngresado(0);
-    setVuelto(null);
-    setMensajeError('');
-  };
+            await axios.post('http://localhost:4000/api/ventas', venta);
 
-  const eliminarProductoSeleccionado = (id) => {
-    setProductosSeleccionados(productosSeleccionados.filter(producto => producto._id !== id));
-  };
+            alert('Venta realizada con éxito.');
+            setCarrito([]);
+            setTotal(0);
+            setMontoRecibido('');
+            setVuelto('');
+            setClienteSeleccionado('');
+            setTipoVenta('contado');
+        } catch (error) {
+            console.error('Error al realizar la venta:', error);
+            alert('Hubo un error al realizar la venta.');
+        }
+    };
 
-  return (
-    <div className="col-md-6 offset-md-3">
-      <div className="card card-body">
-        <h2 className="text-center">Venta de Productos</h2>
-
-        <div className="mb-3">
-          <label>Seleccionar Producto</label>
-          <select className="form-control" onChange={manejarSeleccionProducto} value="">
-            <option value="" disabled>Selecciona un producto</option>
-            {productos.map(producto => (
-              <option key={producto._id} value={producto._id}>
-                {producto.nombre} - {producto.precio} PYG
-              </option>
-            ))}
-          </select>
+    return (
+        <div className="container mt-5">
+            <h2>FORM POS</h2>
+            <div className="row">
+                <div className="col-md-8">
+                    <h3>Productos</h3>
+                    <ul className="list-group">
+                        {productos.map((producto) => (
+                            <li key={producto._id} className="list-group-item d-flex justify-content-between align-items-center">
+                                {producto.nombre} - gs. {producto.precio}
+                                <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => agregarAlCarrito(producto)}
+                                >
+                                    Agregar
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="col-md-4">
+                    <h3>Carrito</h3>
+                    <ul className="list-group">
+                        {carrito.map((producto) => (
+                            <li key={producto._id} className="list-group-item d-flex justify-content-between align-items-center">
+                                {producto.nombre} - gs. {producto.precio} x {producto.cantidad}
+                                <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => quitarDelCarrito(producto._id)}
+                                >
+                                    Quitar
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                    <h4 className="mt-3">Total: gs. {formatearNumero(total)}</h4>
+                    <div className="mt-3">
+                        <label>Monto Recibido:</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={montoRecibido}
+                            onChange={(e) => calcularVuelto(e.target.value)}
+                        />
+                        <h5 className="mt-2">Vuelto: gs. {vuelto}</h5>
+                    </div>
+                    <div className="mt-3">
+                        <label>Seleccionar Cliente:</label>
+                        <select
+                            className="form-select"
+                            value={clienteSeleccionado}
+                            onChange={(e) => setClienteSeleccionado(e.target.value)}
+                        >
+                            <option value="">Seleccione un cliente</option>
+                            {clientes.map((cliente) => (
+                                <option key={cliente._id} value={cliente._id}>
+                                    {cliente.nombre} - Crédito: {cliente.creditoAcumulado}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mt-3">
+                        <label>Tipo de Venta:</label>
+                        <div>
+                            <div className="form-check form-check-inline">
+                                <input
+                                    type="radio"
+                                    id="contado"
+                                    name="tipoVenta"
+                                    className="form-check-input"
+                                    value="contado"
+                                    checked={tipoVenta === 'contado'}
+                                    onChange={(e) => setTipoVenta(e.target.value)}
+                                />
+                                <label htmlFor="contado" className="form-check-label">Contado</label>
+                            </div>
+                            <div className="form-check form-check-inline">
+                                <input
+                                    type="radio"
+                                    id="credito"
+                                    name="tipoVenta"
+                                    className="form-check-input"
+                                    value="credito"
+                                    checked={tipoVenta === 'credito'}
+                                    onChange={(e) => setTipoVenta(e.target.value)}
+                                />
+                                <label htmlFor="credito" className="form-check-label">Crédito</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button className="btn btn-success mt-3 w-100" onClick={realizarVenta}>
+                        Realizar Venta
+                    </button>
+                </div>
+            </div>
         </div>
-
-        {productosSeleccionados.length > 0 && (
-          <div className="mb-3">
-            <h4>Carrito:</h4>
-            <ul className="list-group">
-              {productosSeleccionados.map(producto => (
-                <li key={producto._id} className="list-group-item d-flex justify-content-between align-items-center">
-                  {producto.nombre} - {producto.precio} PYG
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => eliminarProductoSeleccionado(producto._id)}
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3"><strong>Total a pagar:</strong> {calcularTotal()} PYG</p>
-          </div>
-        )}
-
-        <div className="mb-3">
-          <label>Monto Ingresado</label>
-          <input
-            type="number"
-            className="form-control"
-            value={montoIngresado}
-            onChange={manejarCambioMonto}
-            min="0"
-          />
-        </div>
-
-        {mensajeError && <p className="text-danger">{mensajeError}</p>}
-        {vuelto !== null && <p className="text-success">Vuelto a dar: {vuelto} PYG</p>}
-
-        <div className="d-flex justify-content-between">
-          <button className="btn btn-success" onClick={procesarVenta}>Procesar Venta</button>
-          <button className="btn btn-danger" onClick={cancelarVenta}>Cancelar Venta</button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default VentaDeProductos;
