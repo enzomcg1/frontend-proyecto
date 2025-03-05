@@ -5,7 +5,7 @@ const CrearClientes = () => {
     const [nombre, setNombre] = useState('');
     const [direccion, setDireccion] = useState('');
     const [telefono, setTelefono] = useState('');
-    const [CI, setCi] = useState('');
+    const [ci, setCi] = useState('');
     const [mensaje, setMensaje] = useState('');  // Inicializamos correctamente la variable
 
     const handleSubmit = async (e) => {
@@ -16,7 +16,7 @@ const CrearClientes = () => {
             nombre,
             direccion,
             telefono,
-            CI,
+            ci,
             creditoAcumulado: 0, // Aseguramos que sea 'creditoAcumulado' para que coincida con el modelo
         };
 

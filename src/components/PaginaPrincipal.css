@@ -1,0 +1,49 @@
+/* Estilo base para los botones */
+.btn-primary {
+    background: linear-gradient(90deg, #000000 0%, #000000 100%);
+    /* Fondo degradado */
+    border: none;
+    /* Sin bordes */
+    color: rgb(253, 253, 253);
+    /* Texto blanco */
+    padding: 15px 20px;
+    /* Espaciado interno */
+    font-size: 1.1rem;
+    /* Tamaño del texto */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Transiciones suaves */
+}
+
+/* Efecto 3D al pasar el cursor */
+.btn-primary.hover-3d:hover {
+    transform: translateY(-5px);
+    /* Elevación */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    /* Sombra */
+}
+
+/* Cambio de color al pasar el cursor */
+.btn-primary.hover-3d:hover {
+    background: linear-gradient(90deg, #ff6f61 0%, #ffcc00 100%);
+    /* Fondo degradado al pasar el cursor */
+    color: white;
+    /* Texto blanco */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+    .btn-primary {
+        font-size: 1rem;
+        /* Reducir el tamaño del texto en móviles */
+        padding: 10px 15px;
+        /* Reducir el padding en móviles */
+    }
+
+    .col-md-4 {
+        flex: 0 0 100%;
+        /* Hacer que los botones ocupen el 100% del ancho en móviles */
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,72 @@
+/* Reducir el tamaño del marco de la barra de navegación */
+.navbar {
+    padding: 0.5rem 1rem;
+    /* Reducir el padding */
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    /* Reducir el tamaño del texto del brand */
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    /* Reducir el padding de los enlaces */
+}
+
+/* Efecto 3D al pasar el cursor */
+.nav-link.hover-3d {
+    display: inline-block;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-link.hover-3d:hover {
+    transform: translateY(-3px);
+    /* Elevación más sutil */
+    color: #ff6f61 !important;
+    /* Cambiar color al pasar el cursor */
+}
+
+/* Formato bicolor */
+.navbar {
+    background: linear-gradient(90deg, #000000 0%, #000000 100%);
+    /* Fondo degradado */
+}
+
+.navbar-brand,
+.nav-link {
+    color: #ffffff !important;
+    /* Texto blanco */
+}
+
+.nav-link.hover-3d:hover {
+    background: linear-gradient(90deg, #c44e4e 0%, #ffcc00 100%);
+    /* Fondo degradado al pasar el cursor */
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Texto con efecto degradado */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        background: rgba(30, 60, 114, 0.9);
+        /* Fondo semitransparente para el menú colapsado */
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .nav-link.hover-3d {
+        text-align: center;
+        /* Centrar los enlaces en móviles */
+        margin: 5px 0;
+        /* Espaciado entre enlaces */
+    }
+}
+
+/* Asegurar que el contenido no se solape con la barra de navegación */
+body {
+    padding-top: 70px;
+    /* Ajustar según la altura de la barra de navegación */
+}
