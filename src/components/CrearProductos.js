@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CrearProducto = () => {
@@ -6,24 +6,41 @@ const CrearProducto = () => {
     nombre: '',
     descripcion: '',
     precio: 0,
-    categoria: ''  // Agregamos la categoría al valor inicial
+    categoria: '',
   };
 
   const [producto, setProducto] = useState(valorInicial);
+  const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías
 
+  // Obtener las categorías al cargar el componente
+  useEffect(() => {
+    const obtenerCategorias = async () => {
+      try {
+        const res = await axios.get('http://localhost:4000/api/categorias');
+        setCategorias(res.data);
+      } catch (error) {
+        console.error('Error obteniendo categorías:', error);
+      }
+    };
+
+    obtenerCategorias();
+  }, []);
+
+  // Función para capturar los datos del formulario
   const capturarDatos = (e) => {
     const { name, value } = e.target;
     setProducto({
       ...producto,
-      [name]: name === 'precio' ? parseFloat(value) : value
+      [name]: name === 'precio' ? parseFloat(value) : value,
     });
   };
 
+  // Función para guardar los datos del producto
   const guardarDatos = async (e) => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:4000/api/producto', producto);
-      setProducto(valorInicial);
+      setProducto(valorInicial); // Limpiar el formulario después de guardar
       alert('Producto guardado con éxito');
     } catch (error) {
       console.error('Error guardando el producto:', error);
@@ -37,6 +54,7 @@ const CrearProducto = () => {
         <form onSubmit={guardarDatos}>
           <h2 className="text-center">Agregar producto</h2>
 
+          {/* Campo para el nombre del producto */}
           <div className="mb-3">
             <label>Nombre del producto</label>
             <input
@@ -50,6 +68,7 @@ const CrearProducto = () => {
             />
           </div>
 
+          {/* Campo para la descripción del producto */}
           <div className="mb-3">
             <label>Descripción</label>
             <input
@@ -63,6 +82,7 @@ const CrearProducto = () => {
             />
           </div>
 
+          {/* Campo para el precio del producto */}
           <div className="mb-3">
             <label>Precio</label>
             <input
@@ -77,6 +97,7 @@ const CrearProducto = () => {
             />
           </div>
 
+          {/* Campo para seleccionar la categoría */}
           <div className="mb-3">
             <label>Categoría</label>
             <select
@@ -87,17 +108,15 @@ const CrearProducto = () => {
               required
             >
               <option value="">Selecciona una categoría</option>
-              <option value="limpieza">Limpieza</option>
-              <option value="gaseosas">Gaseosas</option>
-              <option value="bebidas-alcoholicas">Bebidas Alcohólicas</option>
-              <option value="embutidos">Embutidos</option>
-              <option value="panes">Panes</option>
-              <option value="cocina">Cocina</option>
-              <option value="remedios-para-mate">Remedios para Mate</option>
-              <option value="rodados">Vehiculos</option>
+              {categorias.map((categoria) => (
+                <option key={categoria._id} value={categoria.nombre}>
+                  {categoria.nombre}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Botón para guardar el producto */}
           <button className="btn btn-primary form-control" type="submit">
             Guardar producto
           </button>

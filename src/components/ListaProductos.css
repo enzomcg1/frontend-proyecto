@@ -1,0 +1,54 @@
+/* Estilo para las tarjetas de productos */
+.card {
+    border: 2px solid white;
+    /* Borde blanco */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    background-color: #343a40;
+    /* Fondo oscuro */
+    color: white;
+    /* Texto blanco */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Transiciones suaves */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    /* Elevación al pasar el cursor */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    /* Sombra al pasar el cursor */
+}
+
+/* Estilo para el encabezado de la tarjeta */
+.card-header {
+    border-bottom: 2px solid white;
+    /* Línea blanca en la parte inferior */
+    background-color: #495057;
+    /* Fondo ligeramente más claro */
+    padding: 15px;
+    /* Espaciado interno */
+}
+
+/* Estilo para el pie de la tarjeta */
+.card-footer {
+    border-top: 2px solid white;
+    /* Línea blanca en la parte superior */
+    background-color: #495057;
+    /* Fondo ligeramente más claro */
+    padding: 10px;
+    /* Espaciado interno */
+}
+
+/* Estilo para los botones dentro de la tarjeta */
+.card-footer .btn {
+    margin: 5px;
+    /* Espaciado entre botones */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px;
+        /* Espaciado entre tarjetas en móviles */
+    }
+}
