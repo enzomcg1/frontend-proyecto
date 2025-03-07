@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -8,6 +7,7 @@ const VentaDeProductos = () => {
     const [total, setTotal] = useState(0);
     const [montoRecibido, setMontoRecibido] = useState(''); // Sin formatear para edición
     const [vuelto, setVuelto] = useState('');
+    const [saldoPendiente, setSaldoPendiente] = useState(0);
 
     const [clientes, setClientes] = useState([]);
     const [clienteSeleccionado, setClienteSeleccionado] = useState('');
@@ -70,14 +70,19 @@ const VentaDeProductos = () => {
         return parseFloat(numero).toLocaleString('es-ES'); // Formato español con puntos
     };
 
-    const calcularVuelto = (monto) => {
-        // Guardar el monto recibido sin formatear para no limitar la edición
-        setMontoRecibido(monto);
+    const calcularSaldoPendiente = (monto) => {
+        setMontoRecibido(monto); // Guardar el monto recibido sin formatear
 
-        // Calcular el vuelto solo cuando el monto es válido
         const montoNumerico = parseFloat(monto.replace(/\./g, '')) || 0; // Quita puntos antes de parsear
-        const calculado = montoNumerico - total;
-        setVuelto(calculado >= 0 ? formatearNumero(calculado) : '0');
+        const saldo = total - montoNumerico;
+
+        if (saldo > 0) {
+            setSaldoPendiente(saldo); // Actualizar el saldo pendiente
+            setVuelto('0'); // No hay vuelto si el saldo es positivo
+        } else {
+            setSaldoPendiente(0); // Saldo pendiente es 0 si se cubre el total
+            setVuelto(formatearNumero(Math.abs(saldo))); // Calcular vuelto si el monto es mayor al total
+        }
     };
 
     const realizarVenta = async () => {
@@ -86,10 +91,22 @@ const VentaDeProductos = () => {
             return;
         }
 
+        const montoNumerico = parseFloat(montoRecibido.replace(/\./g, '')) || 0;
+
+        if (montoNumerico <= 0) {
+            alert('Debe ingresar un monto válido.');
+            return;
+        }
+
+        if (saldoPendiente > 0 && tipoVenta === 'contado') {
+            alert('El monto ingresado no cubre el total de la venta. Aumente el monto o cambie a crédito.');
+            return;
+        }
+
         try {
             if (tipoVenta === 'credito') {
                 const cliente = clientes.find((c) => c._id === clienteSeleccionado);
-                const nuevoCredito = parseFloat(cliente.creditoAcumulado || 0) + total;
+                const nuevoCredito = parseFloat(cliente.creditoAcumulado || 0) + saldoPendiente;
 
                 await axios.put(`http://localhost:4000/api/clientes/${clienteSeleccionado}`, {
                     ...cliente,
@@ -102,17 +119,26 @@ const VentaDeProductos = () => {
                 productos: carrito,
                 total,
                 tipoVenta,
+                saldoPendiente: saldoPendiente > 0 ? saldoPendiente : 0, // Guardar el saldo pendiente
+                pagos: [{ monto: montoNumerico, fecha: new Date() }], // Registrar el pago
             };
 
             await axios.post('http://localhost:4000/api/ventas', venta);
 
-            alert('Venta realizada con éxito.');
-            setCarrito([]);
-            setTotal(0);
-            setMontoRecibido('');
-            setVuelto('');
-            setClienteSeleccionado('');
-            setTipoVenta('contado');
+            if (saldoPendiente === 0) {
+                alert('Venta realizada con éxito.');
+                setCarrito([]);
+                setTotal(0);
+                setMontoRecibido('');
+                setVuelto('');
+                setClienteSeleccionado('');
+                setTipoVenta('contado');
+            } else {
+                alert(`Pago parcial registrado. Saldo pendiente: gs. ${formatearNumero(saldoPendiente)}`);
+                setTotal(saldoPendiente); // Actualizar el total al saldo pendiente
+                setMontoRecibido(''); // Reiniciar el monto recibido
+                setSaldoPendiente(0); // Reiniciar el saldo pendiente
+            }
         } catch (error) {
             console.error('Error al realizar la venta:', error);
             alert('Hubo un error al realizar la venta.');
@@ -161,9 +187,10 @@ const VentaDeProductos = () => {
                             type="text"
                             className="form-control"
                             value={montoRecibido}
-                            onChange={(e) => calcularVuelto(e.target.value)}
+                            onChange={(e) => calcularSaldoPendiente(e.target.value)}
                         />
                         <h5 className="mt-2">Vuelto: gs. {vuelto}</h5>
+                        <h5 className="mt-2">Saldo Pendiente: gs. {formatearNumero(saldoPendiente)}</h5>
                     </div>
                     <div className="mt-3">
                         <label>Seleccionar Cliente:</label>

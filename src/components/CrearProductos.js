@@ -7,12 +7,14 @@ const CrearProducto = () => {
     descripcion: '',
     precio: 0,
     categoria: '',
+    proveedor: '', // Nuevo campo para el proveedor
   };
 
   const [producto, setProducto] = useState(valorInicial);
-  const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías
+  const [categorias, setCategorias] = useState([]);
+  const [proveedores, setProveedores] = useState([]); // Estado para almacenar los proveedores
 
-  // Obtener las categorías al cargar el componente
+  // Obtener las categorías y proveedores al cargar el componente
   useEffect(() => {
     const obtenerCategorias = async () => {
       try {
@@ -23,7 +25,17 @@ const CrearProducto = () => {
       }
     };
 
+    const obtenerProveedores = async () => {
+      try {
+        const res = await axios.get('http://localhost:4000/api/proveedores');
+        setProveedores(res.data);
+      } catch (error) {
+        console.error('Error obteniendo proveedores:', error);
+      }
+    };
+
     obtenerCategorias();
+    obtenerProveedores();
   }, []);
 
   // Función para capturar los datos del formulario
@@ -114,6 +126,25 @@ const CrearProducto = () => {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Campo para seleccionar el proveedor */}
+          <div className="mb-3">
+            <label>Proveedor</label>
+           <select
+    name="proveedor"
+    className="form-control"
+    value={producto.proveedor}
+    onChange={capturarDatos}
+    required
+>
+    <option value="">Selecciona un proveedor</option>
+    {proveedores.map((proveedor) => (
+        <option key={proveedor._id} value={proveedor._id}>
+            {proveedor.nombre}
+        </option>
+    ))}
+</select>
           </div>
 
           {/* Botón para guardar el producto */}

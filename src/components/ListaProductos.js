@@ -10,6 +10,7 @@ const ListaProductos = () => {
   const [nuevaCategoria, setNuevaCategoria] = useState('');
   const [categorias, setCategorias] = useState([]);
   const [categoriaEditando, setCategoriaEditando] = useState(null);
+  const [categoriasExpandidas, setCategoriasExpandidas] = useState({}); // Estado para controlar las categorías expandidas
 
   // Obtener la lista de productos y categorías al cargar el componente
   useEffect(() => {
@@ -130,6 +131,14 @@ const ListaProductos = () => {
     }, {});
   };
 
+  // Función para alternar la visibilidad de una categoría
+  const toggleCategoria = (categoria) => {
+    setCategoriasExpandidas((prevState) => ({
+      ...prevState,
+      [categoria]: !prevState[categoria], // Alternar entre true y false
+    }));
+  };
+
   // Agrupar los productos antes de renderizar
   const productosPorCategoria = agruparPorCategoria(productos);
 
@@ -219,34 +228,44 @@ const ListaProductos = () => {
           {/* Lista de productos agrupados por categoría */}
           {Object.keys(productosPorCategoria).map(categoria => (
             <div key={categoria} className='mb-4'>
-              <h3>{categoria.replace(/-/g, ' ')}</h3>
-              <div className='row'>
-                {productosPorCategoria[categoria].map(producto => (
-                  <div className='col-md-4 p-2' key={producto._id}>
-                    <div className='card'>
-                      <div className='card-header'>
-                        <h4>Nombre del producto: {producto.nombre}</h4>
-                        <p>Descripción del producto: {producto.descripcion}</p>
-                        <p>Precio del producto: {producto.precio} PYG</p>
-                      </div>
-                      <div className='card-footer'>
-                        <button
-                          className='btn btn-danger me-2 hover-3d'
-                          onClick={() => eliminarProducto(producto._id)}
-                        >
-                          Eliminar
-                        </button>
-                        <button
-                          className='btn btn-warning hover-3d'
-                          onClick={() => editarProductoHandler(producto)}
-                        >
-                          Editar
-                        </button>
+              <div
+                className='d-flex justify-content-between align-items-center mb-2 cursor-pointer'
+                onClick={() => toggleCategoria(categoria)} // Alternar la visibilidad al hacer clic
+              >
+                <h3>{categoria.replace(/-/g, ' ')}</h3>
+                <span>{categoriasExpandidas[categoria] ? '▲' : '▼'}</span> {/* Indicador visual */}
+              </div>
+              {categoriasExpandidas[categoria] && ( // Renderizar solo si la categoría está expandida
+                <div className='row'>
+                  {productosPorCategoria[categoria].map(producto => (
+                    <div className='col-md-4 p-2' key={producto._id}>
+                      <div className='card'>
+                        <div className='card-header'>
+                          <h4>Nombre del producto: {producto.nombre}</h4>
+                          <p>Descripción del producto: {producto.descripcion}</p>
+                          <p>Precio del producto: {producto.precio} PYG</p>
+                          {/* Mostrar el nombre del proveedor */}
+                          <p>Proveedor: {producto.proveedor?.nombre || 'Sin proveedor'}</p>
+                        </div>
+                        <div className='card-footer'>
+                          <button
+                            className='btn btn-danger me-2 hover-3d'
+                            onClick={() => eliminarProducto(producto._id)}
+                          >
+                            Eliminar
+                          </button>
+                          <button
+                            className='btn btn-warning hover-3d'
+                            onClick={() => editarProductoHandler(producto)}
+                          >
+                            Editar
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </>

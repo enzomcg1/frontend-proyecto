@@ -57,6 +57,11 @@ const Navegacion = () => {
                                         Clientes
                                     </Link>
                                 </li>
+                                 <li className="nav-item">
+                                    <Link className="nav-link hover-3d" to='/GestionarProveedores'>
+                                        Proveedores
+                                    </Link>
+                                </li>
                                 <li className="nav-item">
                                     <Link className="nav-link hover-3d" to="/lista-ventas">
                                         Registro de Ventas
