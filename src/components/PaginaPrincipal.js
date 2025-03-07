@@ -11,6 +11,7 @@ const PaginaPrincipal = () => {
         { name: 'POS', route: '/POS' },
         { name: 'Perfil', route: '/perfil' },
         { name: 'Clientes', route: '/clientes' },
+        { name: 'Proveedores', route: '/GestionarProveedores' }, // Botón para Proveedores
         { name: 'Registro de Ventas', route: '/lista-ventas' }, // Nuevo botón para el registro de ventas
     ];
 

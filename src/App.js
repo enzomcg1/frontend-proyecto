@@ -9,7 +9,8 @@ import Perfil from './components/Perfil';
 import VentaDeProductos from './components/VentaDeProductos';
 import PaginaPrincipal from './components/PaginaPrincipal';
 import Clientes from './components/Clientes';
-import ListaVentas from './components/ListaVentas'; // Importar el nuevo componente
+import ListaVentas from './components/ListaVentas';
+import GestionarProveedores from './components/GestionarProveedores';
 
 const App = () => {
     const isAuthenticated = !!localStorage.getItem('token');
@@ -27,7 +28,8 @@ const App = () => {
                             <Route path="/perfil" element={<Perfil />} />
                             <Route path="/POS" element={<VentaDeProductos />} />
                             <Route path="/clientes" element={<Clientes />} />
-                            <Route path="/lista-ventas" element={<ListaVentas />} /> {/* Nueva ruta para ListaVentas */}
+                            <Route path="/lista-ventas" element={<ListaVentas />} />
+                            <Route path="/GestionarProveedores" element={<GestionarProveedores />} />
                             <Route path="*" element={<Navigate to="/pagina-principal" />} />
                         </>
                     ) : (
