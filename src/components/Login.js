@@ -20,7 +20,8 @@ const Login = () => {
             const response = await axios.post(`${API_URL}/auth/login`, usuario);
             localStorage.setItem('token', response.data.token);
             alert('Inicio de sesión exitoso');
-            navigate('/pagina-principal'); // Asegúrate de que esta ruta exista en tu router
+            // Redirige y recarga la página para aplicar el token
+            window.location.href = '/pagina-principal';
         } catch (error) {
             console.error('Error al iniciar sesión:', error.response ? error.response.data : error.message);
             alert(`Error al iniciar sesión: ${error.response ? error.response.data.message : error.message}`);
@@ -69,8 +70,18 @@ const Login = () => {
                             </button>
                         </div>
                     </div>
-                    <button type="submit" className="btn btn-primary form-control mt-4">Iniciar Sesión</button>
+                    <button type="submit" className="btn btn-primary form-control mt-4">
+                        Iniciar Sesión
+                    </button>
                 </form>
+
+                {/* Mensaje y botón para registro */}
+                <div className="text-center mt-4">
+                    <p>¿No tienes una cuenta?</p>
+                    <button className="btn btn-link" onClick={() => navigate('/registro')}>
+                        Ir al formulario de registro
+                    </button>
+                </div>
             </div>
         </div>
     );
