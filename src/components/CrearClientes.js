@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -9,6 +10,7 @@ const CrearClientes = () => {
     const [telefono, setTelefono] = useState('');
     const [ci, setCi] = useState('');
     const [mensaje, setMensaje] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,10 +26,17 @@ const CrearClientes = () => {
         try {
             const respuesta = await axios.post(`${API_URL}/clientes`, nuevoCliente);
             setMensaje(respuesta.data.message || 'Cliente agregado correctamente');
+
+            // Limpiar campos
             setNombre('');
             setDireccion('');
             setTelefono('');
             setCi('');
+
+            // Redirigir a clientes y forzar reload para ver el nuevo cliente
+            setTimeout(() => {
+                window.location.href = '/clientes';
+            }, 1000);
         } catch (error) {
             console.error('Error al agregar cliente:', error);
             setMensaje('Hubo un problema al agregar el cliente.');
