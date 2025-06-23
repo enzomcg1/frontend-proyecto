@@ -2,21 +2,23 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Registro = () => {
     const [usuario, setUsuario] = useState({ email: '', password: '', username: '' });
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Hook para la navegación
+    const navigate = useNavigate();
 
     const onChange = e => setUsuario({ ...usuario, [e.target.name]: e.target.value });
 
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/api/auth/register', usuario);
+            const response = await axios.post(`${API_URL}/auth/register`, usuario);
             setMensaje(response.data.message);
             setError('');
-            navigate('/login'); // Redirige al login después de un registro exitoso
+            navigate('/login'); // Redirige al login después de registro exitoso
         } catch (error) {
             if (error.response && error.response.data) {
                 setError(error.response.data.message);
@@ -26,7 +28,6 @@ const Registro = () => {
             setMensaje('');
         }
     };
-    
 
     return (
         <div className="col-md-6 offset-md-3">
@@ -67,9 +68,7 @@ const Registro = () => {
                             value={usuario.password}
                             onChange={onChange}
                             required
-                            
                         />
-                        
                     </div>
                     <button type="submit" className="btn btn-primary form-control mt-4">Registrar</button>
                 </form>

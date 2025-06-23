@@ -1,30 +1,29 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const CrearClientes = () => {
     const [nombre, setNombre] = useState('');
     const [direccion, setDireccion] = useState('');
     const [telefono, setTelefono] = useState('');
     const [ci, setCi] = useState('');
-    const [mensaje, setMensaje] = useState('');  // Inicializamos correctamente la variable
+    const [mensaje, setMensaje] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Objeto de datos para enviar al backend
+
         const nuevoCliente = {
             nombre,
             direccion,
             telefono,
             ci,
-            creditoAcumulado: 0, // Aseguramos que sea 'creditoAcumulado' para que coincida con el modelo
+            creditoAcumulado: 0,
         };
 
         try {
-            // Llamada a la API para agregar un nuevo cliente
-            const respuesta = await axios.post('http://localhost:4000/api/clientes', nuevoCliente);
-            setMensaje(respuesta.data.message);  // Se muestra el mensaje de éxito
-            // Limpiar el formulario
+            const respuesta = await axios.post(`${API_URL}/clientes`, nuevoCliente);
+            setMensaje(respuesta.data.message || 'Cliente agregado correctamente');
             setNombre('');
             setDireccion('');
             setTelefono('');
@@ -41,46 +40,46 @@ const CrearClientes = () => {
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="nombre" className="form-label">Nombre</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="nombre" 
-                        value={nombre} 
-                        onChange={(e) => setNombre(e.target.value)} 
-                        required 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="nombre"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="direccion" className="form-label">Dirección</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="direccion" 
-                        value={direccion} 
-                        onChange={(e) => setDireccion(e.target.value)} 
-                        required 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="direccion"
+                        value={direccion}
+                        onChange={(e) => setDireccion(e.target.value)}
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="telefono" className="form-label">Teléfono</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="telefono" 
-                        value={telefono} 
-                        onChange={(e) => setTelefono(e.target.value)} 
-                        required 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="telefono"
+                        value={telefono}
+                        onChange={(e) => setTelefono(e.target.value)}
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="ci" className="form-label">CI</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="ci" 
-                        value={CI} 
-                        onChange={(e) => setCi(e.target.value)} 
-                        required 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="ci"
+                        value={ci}
+                        onChange={(e) => setCi(e.target.value)}
+                        required
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Agregar Cliente</button>

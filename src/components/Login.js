@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Login = () => {
     const [usuario, setUsuario] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
@@ -15,10 +17,10 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/api/auth/login', usuario);
+            const response = await axios.post(`${API_URL}/auth/login`, usuario);
             localStorage.setItem('token', response.data.token);
             alert('Inicio de sesión exitoso');
-            navigate('components/PaginaPrincipal.js'); // Redirige a la página de ListaProductos
+            navigate('/pagina-principal'); // Asegúrate de que esta ruta exista en tu router
         } catch (error) {
             console.error('Error al iniciar sesión:', error.response ? error.response.data : error.message);
             alert(`Error al iniciar sesión: ${error.response ? error.response.data.message : error.message}`);
