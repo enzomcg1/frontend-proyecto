@@ -6,10 +6,12 @@ const ListaVentas = () => {
     const [ventas, setVentas] = useState([]);
     const navigate = useNavigate();
 
+    const API_URL = process.env.REACT_APP_API_URL;
+
     useEffect(() => {
         const obtenerVentas = async () => {
             try {
-                const res = await axios.get('http://localhost:4000/api/ventas');
+                const res = await axios.get(`${API_URL}/ventas`);
                 setVentas(res.data);
             } catch (error) {
                 console.error('Error al obtener las ventas:', error);
@@ -17,7 +19,7 @@ const ListaVentas = () => {
         };
 
         obtenerVentas();
-    }, []);
+    }, [API_URL]);
 
     return (
         <div className="container mt-5">

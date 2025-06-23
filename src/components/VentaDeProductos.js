@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const VentaDeProductos = () => {
     const [productos, setProductos] = useState([]);
     const [carrito, setCarrito] = useState([]);
     const [total, setTotal] = useState(0);
-    const [montoRecibido, setMontoRecibido] = useState(''); // Sin formatear para edición
+    const [montoRecibido, setMontoRecibido] = useState('');
     const [vuelto, setVuelto] = useState('');
     const [saldoPendiente, setSaldoPendiente] = useState(0);
 
@@ -16,7 +18,7 @@ const VentaDeProductos = () => {
     useEffect(() => {
         const fetchProductos = async () => {
             try {
-                const res = await axios.get('http://localhost:4000/api/producto');
+                const res = await axios.get(`${API_URL}/producto`);
                 setProductos(res.data);
             } catch (error) {
                 console.error('Error al obtener productos:', error);
@@ -25,7 +27,7 @@ const VentaDeProductos = () => {
 
         const fetchClientes = async () => {
             try {
-                const res = await axios.get('http://localhost:4000/api/clientes');
+                const res = await axios.get(`${API_URL}/clientes`);
                 setClientes(res.data);
             } catch (error) {
                 console.error('Error al obtener clientes:', error);
@@ -67,21 +69,21 @@ const VentaDeProductos = () => {
     };
 
     const formatearNumero = (numero) => {
-        return parseFloat(numero).toLocaleString('es-ES'); // Formato español con puntos
+        return parseFloat(numero).toLocaleString('es-ES');
     };
 
     const calcularSaldoPendiente = (monto) => {
-        setMontoRecibido(monto); // Guardar el monto recibido sin formatear
+        setMontoRecibido(monto);
 
-        const montoNumerico = parseFloat(monto.replace(/\./g, '')) || 0; // Quita puntos antes de parsear
+        const montoNumerico = parseFloat(monto.replace(/\./g, '')) || 0;
         const saldo = total - montoNumerico;
 
         if (saldo > 0) {
-            setSaldoPendiente(saldo); // Actualizar el saldo pendiente
-            setVuelto('0'); // No hay vuelto si el saldo es positivo
+            setSaldoPendiente(saldo);
+            setVuelto('0');
         } else {
-            setSaldoPendiente(0); // Saldo pendiente es 0 si se cubre el total
-            setVuelto(formatearNumero(Math.abs(saldo))); // Calcular vuelto si el monto es mayor al total
+            setSaldoPendiente(0);
+            setVuelto(formatearNumero(Math.abs(saldo)));
         }
     };
 
@@ -108,7 +110,7 @@ const VentaDeProductos = () => {
                 const cliente = clientes.find((c) => c._id === clienteSeleccionado);
                 const nuevoCredito = parseFloat(cliente.creditoAcumulado || 0) + saldoPendiente;
 
-                await axios.put(`http://localhost:4000/api/clientes/${clienteSeleccionado}`, {
+                await axios.put(`${API_URL}/clientes/${clienteSeleccionado}`, {
                     ...cliente,
                     creditoAcumulado: nuevoCredito,
                 });
@@ -119,11 +121,11 @@ const VentaDeProductos = () => {
                 productos: carrito,
                 total,
                 tipoVenta,
-                saldoPendiente: saldoPendiente > 0 ? saldoPendiente : 0, // Guardar el saldo pendiente
-                pagos: [{ monto: montoNumerico, fecha: new Date() }], // Registrar el pago
+                saldoPendiente: saldoPendiente > 0 ? saldoPendiente : 0,
+                pagos: [{ monto: montoNumerico, fecha: new Date() }],
             };
 
-            await axios.post('http://localhost:4000/api/ventas', venta);
+            await axios.post(`${API_URL}/ventas`, venta);
 
             if (saldoPendiente === 0) {
                 alert('Venta realizada con éxito.');
@@ -135,9 +137,9 @@ const VentaDeProductos = () => {
                 setTipoVenta('contado');
             } else {
                 alert(`Pago parcial registrado. Saldo pendiente: gs. ${formatearNumero(saldoPendiente)}`);
-                setTotal(saldoPendiente); // Actualizar el total al saldo pendiente
-                setMontoRecibido(''); // Reiniciar el monto recibido
-                setSaldoPendiente(0); // Reiniciar el saldo pendiente
+                setTotal(saldoPendiente);
+                setMontoRecibido('');
+                setSaldoPendiente(0);
             }
         } catch (error) {
             console.error('Error al realizar la venta:', error);

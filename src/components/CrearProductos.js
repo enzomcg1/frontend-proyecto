@@ -7,18 +7,17 @@ const CrearProducto = () => {
     descripcion: '',
     precio: 0,
     categoria: '',
-    proveedor: '', // Nuevo campo para el proveedor
+    proveedor: '',
   };
 
   const [producto, setProducto] = useState(valorInicial);
   const [categorias, setCategorias] = useState([]);
-  const [proveedores, setProveedores] = useState([]); // Estado para almacenar los proveedores
+  const [proveedores, setProveedores] = useState([]);
 
-  // Obtener las categorías y proveedores al cargar el componente
   useEffect(() => {
     const obtenerCategorias = async () => {
       try {
-        const res = await axios.get('http://localhost:4000/api/categorias');
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/categorias`);
         setCategorias(res.data);
       } catch (error) {
         console.error('Error obteniendo categorías:', error);
@@ -27,7 +26,7 @@ const CrearProducto = () => {
 
     const obtenerProveedores = async () => {
       try {
-        const res = await axios.get('http://localhost:4000/api/proveedores');
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/proveedores`);
         setProveedores(res.data);
       } catch (error) {
         console.error('Error obteniendo proveedores:', error);
@@ -38,7 +37,6 @@ const CrearProducto = () => {
     obtenerProveedores();
   }, []);
 
-  // Función para capturar los datos del formulario
   const capturarDatos = (e) => {
     const { name, value } = e.target;
     setProducto({
@@ -47,12 +45,11 @@ const CrearProducto = () => {
     });
   };
 
-  // Función para guardar los datos del producto
   const guardarDatos = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:4000/api/producto', producto);
-      setProducto(valorInicial); // Limpiar el formulario después de guardar
+      await axios.post(`${process.env.REACT_APP_API_URL}/producto`, producto);
+      setProducto(valorInicial);
       alert('Producto guardado con éxito');
     } catch (error) {
       console.error('Error guardando el producto:', error);
@@ -66,7 +63,6 @@ const CrearProducto = () => {
         <form onSubmit={guardarDatos}>
           <h2 className="text-center">Agregar producto</h2>
 
-          {/* Campo para el nombre del producto */}
           <div className="mb-3">
             <label>Nombre del producto</label>
             <input
@@ -80,7 +76,6 @@ const CrearProducto = () => {
             />
           </div>
 
-          {/* Campo para la descripción del producto */}
           <div className="mb-3">
             <label>Descripción</label>
             <input
@@ -94,7 +89,6 @@ const CrearProducto = () => {
             />
           </div>
 
-          {/* Campo para el precio del producto */}
           <div className="mb-3">
             <label>Precio</label>
             <input
@@ -109,7 +103,6 @@ const CrearProducto = () => {
             />
           </div>
 
-          {/* Campo para seleccionar la categoría */}
           <div className="mb-3">
             <label>Categoría</label>
             <select
@@ -128,26 +121,24 @@ const CrearProducto = () => {
             </select>
           </div>
 
-          {/* Campo para seleccionar el proveedor */}
           <div className="mb-3">
             <label>Proveedor</label>
-           <select
-    name="proveedor"
-    className="form-control"
-    value={producto.proveedor}
-    onChange={capturarDatos}
-    required
->
-    <option value="">Selecciona un proveedor</option>
-    {proveedores.map((proveedor) => (
-        <option key={proveedor._id} value={proveedor._id}>
-            {proveedor.nombre}
-        </option>
-    ))}
-</select>
+            <select
+              name="proveedor"
+              className="form-control"
+              value={producto.proveedor}
+              onChange={capturarDatos}
+              required
+            >
+              <option value="">Selecciona un proveedor</option>
+              {proveedores.map((proveedor) => (
+                <option key={proveedor._id} value={proveedor._id}>
+                  {proveedor.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Botón para guardar el producto */}
           <button className="btn btn-primary form-control" type="submit">
             Guardar producto
           </button>

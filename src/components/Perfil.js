@@ -8,11 +8,12 @@ const Perfil = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Obtener los datos del usuario al cargar el componente
+    const API_URL = process.env.REACT_APP_API_URL;
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const res = await axios.get('http://localhost:4000/api/auth/user', {
+                const res = await axios.get(`${API_URL}/auth/user`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
@@ -24,16 +25,14 @@ const Perfil = () => {
         };
 
         fetchUserData();
-    }, []);
+    }, [API_URL]);
 
-    // Función para manejar cambios en los inputs
     const onChange = e => setUsuario({ ...usuario, [e.target.name]: e.target.value });
 
-    // Función para actualizar los datos del usuario
     const updateUser = async e => {
         e.preventDefault();
         try {
-            const response = await axios.put('http://localhost:4000/api/auth/user', usuario, {
+            const response = await axios.put(`${API_URL}/auth/user`, usuario, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -50,10 +49,9 @@ const Perfil = () => {
         }
     };
 
-    // Función para eliminar la cuenta del usuario
     const deleteUser = async () => {
         try {
-            await axios.delete('http://localhost:4000/api/auth/user', {
+            await axios.delete(`${API_URL}/auth/user`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -69,7 +67,6 @@ const Perfil = () => {
     return (
         <div className="container-fluid p-4">
             <div className="row">
-                {/* Cuadro grande para visualizar los datos del perfil */}
                 <div className="col-md-8 mb-4">
                     <div className="card shadow-sm">
                         <div className="card-header bg-dark text-white">
@@ -88,7 +85,6 @@ const Perfil = () => {
                     </div>
                 </div>
 
-                {/* Cuadro pequeño para modificar los datos del perfil */}
                 <div className="col-md-4">
                     <div className="card shadow-sm">
                         <div className="card-header bg-dark text-white">
@@ -143,7 +139,6 @@ const Perfil = () => {
                 </div>
             </div>
 
-            {/* Mensajes de éxito o error */}
             {mensaje && <p className="mt-3 text-success text-center">{mensaje}</p>}
             {error && <p className="mt-3 text-danger text-center">{error}</p>}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState,  } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const EditarProducto = ({ producto, onEditSuccess }) => {
@@ -9,7 +9,7 @@ const EditarProducto = ({ producto, onEditSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:4000/api/producto/${producto._id}`, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/producto/${producto._id}`, {
         nombre,
         descripcion,
         precio,

@@ -13,7 +13,7 @@ const GestionarProveedores = () => {
   useEffect(() => {
     const obtenerProveedores = async () => {
       try {
-        const res = await axios.get('http://localhost:4000/api/proveedores');
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/proveedores`);
         setProveedores(res.data);
       } catch (error) {
         console.error('Error obteniendo proveedores:', error);
@@ -36,7 +36,7 @@ const GestionarProveedores = () => {
   const guardarProveedor = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:4000/api/proveedores', nuevoProveedor);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/proveedores`, nuevoProveedor);
       setProveedores([...proveedores, res.data]);
       setNuevoProveedor({ nombre: '', contacto: '', direccion: '' });
       alert('Proveedor guardado con éxito');
@@ -49,7 +49,7 @@ const GestionarProveedores = () => {
   // Función para eliminar un proveedor
   const eliminarProveedor = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/api/proveedores/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/proveedores/${id}`);
       setProveedores(proveedores.filter((proveedor) => proveedor._id !== id));
       alert('Proveedor eliminado con éxito');
     } catch (error) {
@@ -113,7 +113,10 @@ const GestionarProveedores = () => {
         <h3 className="mt-4">Lista de Proveedores</h3>
         <ul className="list-group">
           {proveedores.map((proveedor) => (
-            <li key={proveedor._id} className="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              key={proveedor._id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
               <div>
                 <strong>{proveedor.nombre}</strong>
                 <br />
